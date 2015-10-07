@@ -25,7 +25,9 @@ BOT_COMMANDS = []
 
 
 START = "/start"
+START_GROUP = "/start@NovgorodWeatherBot"
 BOT_COMMANDS.append(START)
+BOT_COMMANDS.append(START_GROUP)
 
 GET_WEATHER = "/getweather"
 GET_WEATHER_GROUP = "/getweather@NovgorodWeatherBot"
