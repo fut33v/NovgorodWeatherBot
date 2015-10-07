@@ -1,0 +1,5 @@
+#!/bin/sh
+cd ..
+env -i git merge --ff-only master
+kill $(ps aux | grep 'python bot_poll.py' | awk '{print $2}')
+screen -d -m python bot_poll.py
