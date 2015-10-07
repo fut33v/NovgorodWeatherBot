@@ -188,7 +188,7 @@ def process_command(command):
     if not isinstance(command, basestring):
         return None
     response = None
-    if command == START:
+    if command == START or START_GROUP:
         response = get_start()
     if command == GET_WEATHER or command == GET_WEATHER_GROUP:
         response = get_weather()
