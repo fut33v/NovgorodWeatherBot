@@ -1,45 +1,60 @@
 # coding=utf-8
 
-import httplib
 import re
-import urllib2
 import urllib
 import bot_util
+
+from bot_util import urlopen
+import botan
 
 __author__ = 'fut33v'
 
 
 BOT_TOKEN = bot_util.read_token()
+if None == BOT_TOKEN:
+    print "No file 'token' with telegram api token found in directory"
+    exit(-1)
+
+BOTAN_TOKEN = bot_util.read_one_string_file("botan_token")
+
 URL = "https://api.telegram.org/bot%s/" % BOT_TOKEN
 URL_SEND_MESSAGE = URL + "sendMessage"
 
 
-# Commands
+BOT_COMMANDS = []
+
+
 START = "/start"
+BOT_COMMANDS.append(START)
+
 GET_WEATHER = "/getweather"
 GET_WEATHER_GROUP = "/getweather@NovgorodWeatherBot"
+BOT_COMMANDS.append(GET_WEATHER)
+BOT_COMMANDS.append(GET_WEATHER_GROUP)
+
 GET_TEMPERATURE = "/gettemperature"
 GET_TEMPERATURE_GROUP = "/gettemperature@NovgorodWeatherBot"
+BOT_COMMANDS.append(GET_TEMPERATURE)
+BOT_COMMANDS.append(GET_TEMPERATURE_GROUP)
 
-BOT_COMMANDS = [START, GET_WEATHER, GET_WEATHER_GROUP, GET_TEMPERATURE, GET_TEMPERATURE_GROUP]
+GET_HUMIDITY = "/gethumidity"
+GET_HUMIDITY_GROUP = "/gethumidity@NovgorodWeatherBot"
+BOT_COMMANDS.append(GET_HUMIDITY)
+BOT_COMMANDS.append(GET_HUMIDITY_GROUP)
 
-def urlopen(url, data=None):
-    try:
-        if data is not None:
-            urllib2.urlopen(url, data)
-        else:
-            return urllib2.urlopen(url, data).read()
-    except urllib2.HTTPError, e:
-        print "HTTPError", e
-    except urllib2.URLError, e:
-        print "URLError",  e
-    except httplib.HTTPException, e:
-        print "HTTPException", e
-    return None
+GET_PRESSURE = "/getpressure"
+GET_PRESSURE_GROUP = "/getpressure@NovgorodWeatherBot"
+BOT_COMMANDS.append(GET_PRESSURE)
+BOT_COMMANDS.append(GET_PRESSURE_GROUP)
 
-# URLS
+GET_WIND = "/getwind"
+GET_WIND_GROUP = "/getwind@NovgorodWeatherBot"
+BOT_COMMANDS.append(GET_WIND)
+BOT_COMMANDS.append(GET_WIND_GROUP)
+
+
 URL_WEATHER = "http://novgorod.ru/weather"
-# Patterns
+
 REGEX_TEMPERATURE_CENTER_ROW = "<tr><td>Центр.*?</td></tr>"
 REGEX_TEMPERATURE_WHITE_TOWN_ROW = "<tr><td>&laquo;Белый город&raquo;.*?</td></tr>"
 REGEX_COMMON_FOR_TEMPERATURE_FROM_ROW = "<td style.*?>(.*?)</td>"
@@ -101,6 +116,18 @@ def build_temperature_string(temperature):
     return "*Температура:* %s°C\n" % temperature
 
 
+def build_humidity_string(humidity):
+    return "*Влажность:* " + humidity + "\n"
+
+
+def build_pressure_string(pressure):
+    return "*Давление:* %s мм. рт. ст.\n" % pressure
+
+
+def build_wind_string(wind):
+    return "*Ветер:* %s " % wind
+
+
 def get_weather():
     page = urlopen(URL_WEATHER)
     temperature_center = get_temperature_center(page)
@@ -109,17 +136,17 @@ def get_weather():
     wind = get_wind(page)
     weather = build_temperature_string(temperature_center)
     if humidity is not None:
-        weather += ("*Влажность:* " + humidity + "\n")
+        weather += build_humidity_string(humidity)
     if pressure is not None:
-        weather += ("*Давление:* %s мм. рт. ст.\n" % pressure)
+        weather += build_pressure_string(pressure)
     if wind is not None:
-        weather += ("*Ветер:* %s " % wind)
+        weather += build_wind_string(wind)
     return weather
 
 
 def send_response(chat_id, response, markdown=False):
     if response is None or chat_id is None:
-        return None
+        return False
     print 'chat_id:', chat_id
     print 'response', response
     d = {
@@ -129,7 +156,7 @@ def send_response(chat_id, response, markdown=False):
     if markdown is True:
         d['parse_mode'] = "Markdown"
     d = urllib.urlencode(d)
-    urlopen(URL_SEND_MESSAGE, data=d)
+    return urlopen(URL_SEND_MESSAGE, data=d)
 
 
 def get_start():
@@ -140,11 +167,18 @@ def get_start():
     Логотип бота: https://vk.com/mzzaxixart
 
     Команды:
-    /start
+    /start — Информация о боте
+
     /getweather — Текущая погода в Великом Новгороде
-    /gettemperature — Температура в Великом Новгороде
+    /gettemperature — Температура
+    /gethumidity - Влажность
+    /getpressure - Давление
+    /getwind - Ветер
+
     """
     return start
+
+
 
 
 def process_command(command):
@@ -158,15 +192,29 @@ def process_command(command):
         response = get_weather()
     if command == GET_TEMPERATURE or command == GET_TEMPERATURE_GROUP:
         response = build_temperature_string(get_temperature_center(urlopen(URL_WEATHER)))
+    if command == GET_HUMIDITY or command == GET_HUMIDITY_GROUP:
+        response = build_humidity_string(get_humidity(urlopen(URL_WEATHER)))
+    if command == GET_PRESSURE or command == GET_PRESSURE_GROUP:
+        response = build_pressure_string(get_pressure(urlopen(URL_WEATHER)))
+    if command == GET_WIND or command == GET_WIND_GROUP:
+        response = build_wind_string(get_wind(urlopen(URL_WEATHER)))
     return response
 
 
 def process_update(update):
+    """
+    :param update: update message from Telegram Bot API
+    :return:
+    """
     if update is None:
         return None
     if not isinstance(update, dict):
         return None
     if "message" in update:
+        user_id = 0
+        if 'from' in update['message']:
+            if 'id' in update['message']['from']:
+                user_id = update['message']['from']['id']
         message = update['message']
         if 'chat' not in message or 'text' not in message:
             return None
@@ -178,7 +226,9 @@ def process_update(update):
         if message_text in BOT_COMMANDS:
             response = process_command(message_text)
             if response is not None:
-                send_response(chat_id, response, markdown=True)
+                s = send_response(chat_id, response, markdown=True)
+                if s is True and None != BOTAN_TOKEN:
+                    botan.track(BOTAN_TOKEN, user_id, message, message_text)
                 # send shit to user
                 print message_text
 

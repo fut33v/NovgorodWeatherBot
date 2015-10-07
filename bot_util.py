@@ -11,6 +11,7 @@ def urlopen(url, data=None):
     try:
         if data is not None:
             urllib2.urlopen(url, data)
+            return True
         else:
             return urllib2.urlopen(url, data).read()
     except urllib2.HTTPError, e:
@@ -19,15 +20,18 @@ def urlopen(url, data=None):
         print "URLError",  e
     except httplib.HTTPException, e:
         print "HTTPException", e
-    return None
+    return False
 
 
 def read_one_string_file(filename):
-    f = open(filename, 'r')
-    s = f.read()
-    s = s.replace('\n', '')
-    s = s.replace('\r', '')
-    return s
+    try:
+        f = open(filename, 'r')
+        s = f.read()
+        s = s.replace('\n', '')
+        s = s.replace('\r', '')
+        return s
+    except IOError:
+        return None
 
 
 def read_token():
@@ -35,13 +39,10 @@ def read_token():
 
 
 def read_previous_update_date():
-    try:
-        u = read_one_string_file(PREVIOUS_UPDATE_DATE_FILENAME)
-        if u == '':
-            return 0
-        return int(u)
-    except IOError:
+    u = read_one_string_file(PREVIOUS_UPDATE_DATE_FILENAME)
+    if u == '' or None == u:
         return 0
+    return int(u)
 
 
 def write_previous_update_date(d):
