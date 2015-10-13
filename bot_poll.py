@@ -18,16 +18,16 @@ if __name__ == "__main__":
 
     while True:
         r = bot_util.urlopen(URL_GET_UPDATES + "?offset=%s" % (last + 1))
-        r = json.loads(r)
-        print r["result"]
-        for message in r["result"]:
-            print message
-            if previous_update_date >= int(message["message"]["date"]):
-                continue
-            last = int(message["update_id"])
-            data = json.dumps(message)
-            bot_novgorod_weather.process_update(message)
-            previous_update_date = int(message["message"]["date"])
-            bot_util.write_previous_update_date(previous_update_date)
-
+        if r:
+            r = json.loads(r)
+            print r["result"]
+            for message in r["result"]:
+                print message
+                if previous_update_date >= int(message["message"]["date"]):
+                    continue
+                last = int(message["update_id"])
+                data = json.dumps(message)
+                bot_novgorod_weather.process_update(message)
+                previous_update_date = int(message["message"]["date"])
+                bot_util.write_previous_update_date(previous_update_date)
         time.sleep(3)
