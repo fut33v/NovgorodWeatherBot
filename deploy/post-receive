@@ -3,4 +3,4 @@ cd ..
 cp deploy/post-receive .git/hooks
 env -i git merge --ff-only master
 kill $(ps aux | grep 'python bot_poll.py' | awk '{print $2}')
-screen -d -m python bot_poll.py
+screen -d -m python novgorod_weather_bot.py
