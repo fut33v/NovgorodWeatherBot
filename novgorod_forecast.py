@@ -85,7 +85,10 @@ def get_day_part_forecast_string(day_part):
     temp = u"??"
     overcast_emoji = u"\u2601\ufe0f"
     rain_emoji = u"\u2614\ufe0f"
+    drops_emoji = u"\U0001f4a6"
     snow_emoji = u"\u2744\ufe0f"
+    cloudy_emoji = u"\u26c5\ufe0f"
+    clear_emoji = u"\u2600\ufe0f"
     emoji = u""
     for child in day_part:
         if child.tag == build_tag_name("temperature"):
@@ -105,11 +108,20 @@ def get_day_part_forecast_string(day_part):
                 if weather_condition == "overcast":
                     emoji = overcast_emoji
                 elif weather_condition == "cloudy-and-rain":
-                    emoji = rain_emoji
+                    emoji = cloudy_emoji + rain_emoji
+                elif weather_condition == "overcast-and-light-rain":
+                    emoji = overcast_emoji + drops_emoji
+                elif weather_condition == "cloudy":
+                    emoji = cloudy_emoji
+                elif weather_condition == "clear":
+                    emoji = clear_emoji
+                elif weather_condition == "cloudy-and-light-rain":
+                    emoji = cloudy_emoji + drops_emoji
+
     if temperature_range:
-        return u"" + temp_from + u"°C ... " + temp_to + u"°C, " + weather_type + emoji
+        return u"" + temp_from + u"°C ... " + temp_to + u"°C, " + weather_type + " " + emoji
     else:
-        return u"" + temp + u"°C, " + weather_type + emoji
+        return u"" + temp + u"°C, " + weather_type + " " + emoji
 
 
 
