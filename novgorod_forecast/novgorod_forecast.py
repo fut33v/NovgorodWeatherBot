@@ -1,6 +1,7 @@
 # coding=utf-8
 import xml.etree.ElementTree as ET
-import bot_util
+
+from util import bot_util
 
 __author__ = 'fut33v'
 
@@ -9,20 +10,21 @@ _URL_FORECAST_GISMETEO = "http://www.weather.com/weather/today/l/RSXX7553:1:RS"
 "id=26179 region=10904"
 _URL_FORECAST_YANDEX = "https://export.yandex.ru/weather-ng/forecasts/26179.xml"
 
+
 def get_forecast():
     p = bot_util.urlopen(_URL_FORECAST_YANDEX)
     if not p:
         return False
 
     root = ET.fromstring(p)
-    if not root:
+    if root is None:
         return False
 
     NUMBER_OF_DAYS = 2
     days_list = []
     i = 0
     for child in root:
-        if child.tag == build_tag_name("day"):
+        if child.tag == _build_tag_name("day"):
             days_list.append(child)
             i += 1
             if i == NUMBER_OF_DAYS:
@@ -33,8 +35,8 @@ def get_forecast():
 
     today = days_list[0]
     tomorrow = days_list[1]
-    today_forecast = get_day_forecast_string(today)
-    tomorrow_forecast = get_day_forecast_string(tomorrow)
+    today_forecast = _get_day_forecast_string(today)
+    tomorrow_forecast = _get_day_forecast_string(tomorrow)
     if not today_forecast or not tomorrow_forecast:
         return False
 
@@ -43,7 +45,7 @@ def get_forecast():
     return forecast
 
 
-def get_day_forecast_string(day):
+def _get_day_forecast_string(day):
     if not isinstance(day, ET.Element):
         return False
     morning_forecast = "morning"
@@ -64,20 +66,20 @@ def get_day_forecast_string(day):
             if day_part_type == night_forecast:
                 night_forecast = child
     forecast = u""
-    morning_forecast = get_day_part_forecast_string(morning_forecast)
+    morning_forecast = _get_day_part_forecast_string(morning_forecast)
     forecast += u"Утро: " + morning_forecast + u"\n"
-    day_forecast = get_day_part_forecast_string(day_forecast)
+    day_forecast = _get_day_part_forecast_string(day_forecast)
     forecast += u"День: " + day_forecast + u"\n"
-    evening_forecast = get_day_part_forecast_string(evening_forecast)
+    evening_forecast = _get_day_part_forecast_string(evening_forecast)
     forecast += u"Вечер: " + evening_forecast + u"\n"
-    night_forecast = get_day_part_forecast_string(night_forecast)
+    night_forecast = _get_day_part_forecast_string(night_forecast)
     forecast += u"Ночь: " + night_forecast + u"\n"
     return forecast
 
-def build_tag_name(tag_name):
+def _build_tag_name(tag_name):
     return "{http://weather.yandex.ru/forecast}" + tag_name
 
-def get_day_part_forecast_string(day_part):
+def _get_day_part_forecast_string(day_part):
     temperature_range = False
     temp_from = u"??"
     temp_to = u"??"
@@ -91,18 +93,18 @@ def get_day_part_forecast_string(day_part):
     clear_emoji = u"\u2600\ufe0f"
     emoji = u""
     for child in day_part:
-        if child.tag == build_tag_name("temperature"):
+        if child.tag == _build_tag_name("temperature"):
             temperature_range = False
             temp = child.text
-        if child.tag == build_tag_name("temperature_from"):
+        if child.tag == _build_tag_name("temperature_from"):
             temperature_range = True
             temp_from = child.text
-        if child.tag == build_tag_name("temperature_to"):
+        if child.tag == _build_tag_name("temperature_to"):
             temperature_range = True
             temp_to = child.text
-        if child.tag == build_tag_name("weather_type"):
+        if child.tag == _build_tag_name("weather_type"):
             weather_type = child.text
-        if child.tag == build_tag_name("weather_condition"):
+        if child.tag == _build_tag_name("weather_condition"):
             if 'code' in child.attrib:
                 weather_condition = child.attrib['code']
                 if weather_condition == "overcast":

@@ -1,11 +1,13 @@
 # coding=utf-8
-import bot_util
-import novgorod_forecast
-import novgorod_weather
-from telegram_bot import TelegramBot
+from util import bot_util
+from novgorod_forecast import novgorod_forecast
+from novgorod_weather import novgorod_weather
+from telegram_bot.telegram_bot import TelegramBot
 
 __author__ = 'fut33v'
 
+TOKEN_FILENAME = "data/token"
+BOTAN_TOKEN_FILENAME = "data/botan_token"
 
 class NovgorodWeatherBot(TelegramBot):
     COMMAND_GET_WEATHER = "/getweather"
@@ -35,14 +37,15 @@ class NovgorodWeatherBot(TelegramBot):
         if text in self._commands_no_parameter:
             response = self.process_command_no_parameters(text)
             if response:
-                success = self._send_response(chat_id, response=response, markdown=True)
+                success = self.send_response(chat_id, response=response, markdown=True)
                 return success
             return False
         else:
             pass
 
     def process_command_no_parameters(self, text):
-        if self._check_message_for_command(text, self._COMMAND_START):
+        if self._check_message_for_command(text, self._COMMAND_START) or \
+                self._check_message_for_command(text, self._COMMAND_HELP):
             return self._get_start_message()
         if self._check_message_for_command(text, self.COMMAND_GET_HUMIDITY):
             h = novgorod_weather.get_humidity()
@@ -74,24 +77,22 @@ class NovgorodWeatherBot(TelegramBot):
 
     def _get_start_message(self):
         return """
-        Погода в великом Новгороде,
-        Получена с сайта novgorod.ru
+        Погода в великом Новгороде
+        Погода — Новгород.ру
         http://novgorod.ru/weather
-        Логотип бота: https://vk.com/mzzaxixart
+        Прогноз — Яндекс.Погода
+        Логотип бота:
+        https://vk.com/mzzaxixart
 
         Команды:
-        /start — Информация о боте
-        /getweather — Погода в Великом Новгороде
-        /gettemperature — Температура
-        /gethumidity - Влажность
-        /getpressure - Давление
-        /getwind - Ветер
-
+        /start, /help
+        /getweather — Погода
+        /getforecast — Прогноз
         """
 
 
 if __name__ == "__main__":
-    t = bot_util.read_one_string_file("token")
-    botan_t = bot_util.read_one_string_file("botan_token")
+    t = bot_util.read_one_string_file(TOKEN_FILENAME)
+    botan_t = bot_util.read_one_string_file(BOTAN_TOKEN_FILENAME)
     bot = NovgorodWeatherBot(t, name="NovgorodWeatherBot", botan_token=botan_t)
     bot.start_poll()

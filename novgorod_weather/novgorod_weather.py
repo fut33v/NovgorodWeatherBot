@@ -1,6 +1,7 @@
 # coding=utf-8
 import re
-import bot_util
+
+from util import bot_util
 
 __author__ = 'fut33v'
 

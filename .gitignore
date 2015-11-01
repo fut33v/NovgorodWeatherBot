@@ -1,5 +1,3 @@
 *.pyc
 .idea
-previous_update_date
-token
-botan_token
+data/

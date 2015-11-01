@@ -36,6 +36,17 @@ def read_one_string_file(filename):
         return None
 
 
+def check_file_for_string(filename, string):
+    if not os.path.exists(filename):
+        return True
+    f = open(filename, 'r')
+    lines = f.readlines()
+    for line in lines:
+        if line == string:
+            return False
+    return True
+
+
 def create_dir_if_not_exists(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
