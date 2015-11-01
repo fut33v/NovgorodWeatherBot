@@ -80,6 +80,8 @@ def _build_tag_name(tag_name):
     return "{http://weather.yandex.ru/forecast}" + tag_name
 
 def _get_day_part_forecast_string(day_part):
+    if not isinstance(day_part, ET.Element):
+        return False
     temperature_range = False
     temp_from = u"??"
     temp_to = u"??"
@@ -91,6 +93,7 @@ def _get_day_part_forecast_string(day_part):
     snow_emoji = u"\u2744\ufe0f"
     cloudy_emoji = u"\u26c5\ufe0f"
     clear_emoji = u"\u2600\ufe0f"
+    moon_part_emoji = u"\U0001f319"
     emoji = u""
     for child in day_part:
         if child.tag == _build_tag_name("temperature"):
@@ -116,7 +119,11 @@ def _get_day_part_forecast_string(day_part):
                 elif weather_condition == "cloudy":
                     emoji = cloudy_emoji
                 elif weather_condition == "clear":
-                    emoji = clear_emoji
+                    type = day_part.attrib['type']
+                    if type == "night":
+                        emoji = moon_part_emoji
+                    else:
+                        emoji = clear_emoji
                 elif weather_condition == "cloudy-and-light-rain":
                     emoji = cloudy_emoji + drops_emoji
 
