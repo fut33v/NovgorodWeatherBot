@@ -82,7 +82,9 @@ class NovgorodWeatherBot(TelegramBot):
         http://novgorod.ru/weather
         Прогноз — Яндекс.Погода
         Логотип бота:
-        https://vk.com/mzzaxixart
+        vk.com/mzzaxixart
+        Автор бота:
+        ilya.fut33v.ru/contacts
 
         Команды:
         /start, /help
