@@ -1,4 +1,4 @@
-# NovgorodWeatherBot : HELLO WORLD FOR TELEGRAM BOT API
+# NovgorodWeatherBot
 
 Telegram Bot, which allows you get current weather and forecast for city Velikiy Novgorod, RUSSIA
 
@@ -17,7 +17,7 @@ Uses long-polling model (method getUpdates of Telegram Bot API)
 - Get *token* for Weather.com API and write it to data/weather_com_token
 - Run *novgorod_weather_bot.py*
 
-# NovgorodWeatherBot : HELLO WORLD ДЛЯ TELEGRAM BOT API
+# NovgorodWeatherBot
 
 Telegram Bot, который позволяет узнать текущую погоду в Великом Новгороде.
 
