@@ -22,7 +22,7 @@ class NovgorodWeatherBot(TelegramBot):
     COMMAND_ADD_TIMER = "/addtimer"
 
     COMMAND_GET_FORECAST = "/getforecast"
-    COMMAND_GET_FORECAST_WEATHER_COM = "/getforecastW"
+    COMMAND_GET_FORECAST_WEATHER_COM = "/getforecastweathercom"
 
     def __init__(self, token, name, weather_com_token=None, botan_token=None):
         TelegramBot.__init__(self, token, name, botan_token)
