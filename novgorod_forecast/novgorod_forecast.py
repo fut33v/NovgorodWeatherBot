@@ -170,7 +170,7 @@ class WeatherComForecaster:
 
                             forecast_tomorrow = forecastday[1]
                             forecast_tomorrow = self._get_day_forecast(forecast_tomorrow)
-                            forecast += u"*Tomorrow:*\n" + forecast_tomorrow
+                            forecast += u"\n*Tomorrow:*\n" + forecast_tomorrow
 
                             return forecast
         return False

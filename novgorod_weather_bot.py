@@ -104,6 +104,7 @@ class NovgorodWeatherBot(TelegramBot):
         Прогноз — Яндекс.Погода, Weather.com
         [Логотип бота](vk.com/mzzaxixart)
         [Автор бота](ilya.fut33v.ru/contacts), Telegram: @fut33v
+
         [Оценить в Store Bot](https://telegram.me/storebot?start=novgorodweatherbot)
         [Github](https://github.com/fut33v/NovgorodWeatherBot)
         """
