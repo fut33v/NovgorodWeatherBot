@@ -22,7 +22,9 @@ class NovgorodWeatherBot(TelegramBot):
     COMMAND_ADD_TIMER = "/addtimer"
 
     COMMAND_GET_FORECAST = "/getforecast"
-    COMMAND_GET_FORECAST_WEATHER_COM = "/getforecastW"
+    COMMAND_GET_FORECAST_WEATHER_COM = "/getforecastweathercom"
+
+    COMMAND_GET_BUTTHUR = "/getbutthurt"
 
     def __init__(self, token, name, weather_com_token=None, botan_token=None):
         TelegramBot.__init__(self, token, name, botan_token)
@@ -37,6 +39,8 @@ class NovgorodWeatherBot(TelegramBot):
 
         self.add_command_no_parameter(self.COMMAND_GET_FORECAST)
         self.add_command_no_parameter(self.COMMAND_GET_FORECAST_WEATHER_COM)
+
+        self.add_command_no_parameter(self.COMMAND_GET_BUTTHUR)
 
         if weather_com_token is not None:
             self._weather_com_forecaster = WeatherComForecaster(weather_com_token)
@@ -90,6 +94,8 @@ class NovgorodWeatherBot(TelegramBot):
                     return f
                 else:
                     return u"Проблемы при получении прогноза погоды"
+        if self._check_message_for_command(text, self.COMMAND_GET_BUTTHUR):
+            return "https://pp.vk.me/c629309/v629309903/209b8/a22Q1yCTn4s.jpg"
         return False
 
     def _get_start_message(self):
@@ -104,6 +110,8 @@ class NovgorodWeatherBot(TelegramBot):
         Прогноз — Яндекс.Погода, Weather.com
         [Логотип бота](vk.com/mzzaxixart)
         [Автор бота](ilya.fut33v.ru/contacts), Telegram: @fut33v
+
+        [Оценить в Store Bot](https://telegram.me/storebot?start=novgorodweatherbot)
         [Github](https://github.com/fut33v/NovgorodWeatherBot)
         """
 

@@ -124,6 +124,8 @@ class YandexForecaster:
                         emoji = OVERCAST_EMOJI + DROPS_EMOJI
                     elif weather_condition == "cloudy":
                         emoji = CLOUDY_EMOJI
+                    elif weather_condition == "overcast-and-rain":
+                        emoji = CLOUDY_EMOJI + RAIN_EMOJI
                     elif weather_condition == "clear":
                         type = day_part.attrib['type']
                         if type == "night":
@@ -168,7 +170,7 @@ class WeatherComForecaster:
 
                             forecast_tomorrow = forecastday[1]
                             forecast_tomorrow = self._get_day_forecast(forecast_tomorrow)
-                            forecast += u"*Tomorrow:*\n" + forecast_tomorrow
+                            forecast += u"\n*Tomorrow:*\n" + forecast_tomorrow
 
                             return forecast
         return False

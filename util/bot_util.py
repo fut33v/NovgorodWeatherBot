@@ -17,9 +17,9 @@ def urlopen(url, data=None):
         else:
             return urllib2.urlopen(url, data).read()
     except urllib2.HTTPError as e:
-        print "HTTPError", e
+        print "HTTPError", e, url, data
     except urllib2.URLError as e:
-        print "URLError", e
+        print "URLError", e, url, data
     # except httplib.HTTPException as e:
     #     print "HTTPException", e
     return False
