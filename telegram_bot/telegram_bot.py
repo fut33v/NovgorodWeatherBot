@@ -2,7 +2,7 @@ import json
 import re
 import time
 
-from util import bot_util, botan
+from util import bot_util
 import telegram_bot_protocol
 
 __author__ = 'fut33v'

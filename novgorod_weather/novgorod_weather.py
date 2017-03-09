@@ -1,135 +1,96 @@
 # coding=utf-8
-import re
 
+import json
 from util import bot_util
 
 __author__ = 'fut33v'
 
-_URL_WEATHER = "http://novgorod.ru/weather"
-
-_regexp_colortable = re.compile("<table class=\"colortable\".*?/table>", re.DOTALL)
-
-_regexp_temperature_center_row = re.compile("<tr><td>Центр.*?</td></tr>", re.DOTALL)
-_regexp_common_for_temperature_from_row = re.compile("<td style.*?>(.*?)</td>")
-
-_regexp_humidity = re.compile("<td>Влажность</td><td.*?>(.*)</td>")
-
-_regexp_pressure = re.compile("<td>Давление</td><td>.*?>(.*?)</span>")
-
-_regexp_wind = re.compile("<td>Направление</td><td><img.*?>(.*?)</td>")
-_regexp_wind_speed = re.compile("<td>Скорость</td><td>(.*?)<span.*?>(.*?)</span></td>")
-
-
-def get_first_table(weather_page):
-    first_table = _regexp_colortable.findall(weather_page)[0]
-    return first_table
-
-
-def _get_temperature_from_page(weather_page):
-    temperature_center_row = _regexp_temperature_center_row.findall(weather_page)[0]
-    m = _regexp_common_for_temperature_from_row.search(temperature_center_row)
-    if m is not None:
-        temperature_center_string = m.group(1)
-        tmp = temperature_center_string.split(' ')
-        if len(tmp) > 1:
-            temperature_center = tmp[0]
-            return temperature_center
-    return None
-
-
-def _get_humidity_from_page(weather_page):
-    t = get_first_table(weather_page)
-    m = _regexp_humidity.search(t)
-    if m is not None:
-        humidity = m.group(1)
-        return humidity
-
-
-def _get_pressure_from_page(weather_page):
-    # t = get_first_table(weather_page)
-    m = _regexp_pressure.search(weather_page)
-    if m is not None:
-        pressure = m.group(1)
-        return pressure
-
-
-def _get_wind_from_page(weather_page):
-    t = get_first_table(weather_page)
-    m = _regexp_wind.search(t)
-    if m is not None:
-        wind = m.group(1)
-        m = _regexp_wind_speed.search(t)
-        if m is not None:
-            wind += " " + m.group(1)
-            wind += " " + m.group(2)
-            wind = wind[1:]
-        return wind
+_URL_WEATHER = "https://www.novgorod.ru/weather/extensions/GoogleChrome/json.php"
 
 
 def get_temperature():
     page = bot_util.urlopen(_URL_WEATHER)
     if not page:
         return None
-    return _get_temperature_from_page(page)
-
-
-def get_humidity():
-    page = bot_util.urlopen(_URL_WEATHER)
-    if not page:
-        return None
-    return _get_humidity_from_page(page)
+    try:
+        j = json.loads(page)
+        if 'outsideTemp' in j:
+            return j['outsideTemp']
+    except Exception as e:
+        print e
+    return None
 
 
 def get_pressure():
     page = bot_util.urlopen(_URL_WEATHER)
     if not page:
         return None
-    return _get_pressure_from_page(page)
+    try:
+        j = json.loads(page)
+        if 'barometer' in j:
+            return j['barometer']
+    except Exception as e:
+        print e
+    return None
 
 
-def get_wind():
+def get_rain():
     page = bot_util.urlopen(_URL_WEATHER)
     if not page:
         return None
-    return _get_wind_from_page(page)
+    try:
+        j = json.loads(page)
+        if 'rain' in j:
+            return j['rain']
+    except Exception as e:
+        print e
+    return None
 
 
 def get_weather():
     page = bot_util.urlopen(_URL_WEATHER)
     if not page:
         return None
-    temperature = _get_temperature_from_page(page)
-    humidity = _get_humidity_from_page(page)
-    pressure = _get_pressure_from_page(page)
-    wind = _get_wind_from_page(page)
+    temperature = None
+    pressure = None
+    rain = None
     weather = ""
+    try:
+        j = json.loads(page)
+        if 'outsideTemp' in j:
+            temperature = j['outsideTemp']
+        if 'barometer' in j:
+            pressure = j['barometer']
+        if 'rain' in j:
+            rain = j['rain']
+    except Exception as e:
+        print e
     if temperature is not None:
         weather += build_temperature_string(temperature)
-    if humidity is not None:
-        weather += build_humidity_string(humidity)
     if pressure is not None:
         weather += build_pressure_string(pressure)
-    if wind is not None:
-        weather += build_wind_string(wind)
+    if rain is not None:
+        weather += build_rain_string(rain)
+
     return weather
 
 
 def build_temperature_string(temperature):
-    return "*Температура:* %s°C\n" % temperature
-
-
-def build_humidity_string(humidity):
-    return "*Влажность:* " + humidity + "\n"
+    return u"*Температура:* %s°C\n" % temperature
 
 
 def build_pressure_string(pressure):
-    return "*Давление:* %s мм. рт. ст.\n" % pressure
+    return u"*Давление:* %s мм. рт. ст.\n" % pressure
 
 
-def build_wind_string(wind):
-    return "*Ветер:* %s " % wind
+def build_rain_string(rain):
+    if rain == "no":
+        rain = u"нет"
+    return u"*Дождь:* %s.\n" % rain
 
 
 if __name__ == "__main__":
     print "temperature", get_temperature()
+    print "barometer", get_pressure()
+    print "rain", get_rain()
     print "weather", get_weather()
