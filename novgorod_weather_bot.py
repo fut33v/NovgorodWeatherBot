@@ -71,10 +71,8 @@ class NovgorodWeatherBot(TelegramBot):
         Команды:
         /start, /help
         /getweather — Погода
-        /getforecast — Прогноз
 
         Погода — [Новгород.ру](http://novgorod.ru/weather)
-        Прогноз — Яндекс.Погода, Weather.com
         [Логотип бота](vk.com/mzzaxixart)
         [Автор бота](ilya.fut33v.ru/contacts), Telegram: @fut33v
 
