@@ -54,7 +54,7 @@ class NovgorodWeatherBot(TelegramBot):
         if self._check_message_for_command(text, self.COMMAND_GET_RAIN):
             w = novgorod_weather.get_rain()
             if w:
-                return novgorod_weather.build_wind_string(w)
+                return novgorod_weather.build_rain_string(w)
         if self._check_message_for_command(text, self.COMMAND_GET_TEMPERATURE):
             temperature = novgorod_weather.get_temperature()
             if temperature:
