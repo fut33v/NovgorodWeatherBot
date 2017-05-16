@@ -49,17 +49,22 @@ class TelegramBot:
                 except ValueError as e:
                     print "Error while polling (json.loads):", e
                     continue
-                # print r["result"]
-                for update in r["result"]:
-                    if len(update) > 0:
-                        print update
-                    if self._previous_update_date >= int(update["message"]["date"]):
-                        continue
-                    last = int(update["update_id"])
-                    self._process_update(update)
-                    previous_update_date = int(update["message"]["date"])
-                    self._write_previous_update_date(previous_update_date)
-            time.sleep(3)
+                if 'result' in r:
+                    for update in r["result"]:
+                        if len(update) > 0:
+                            print update
+                            if 'message' in update:
+                                message = update['message']
+                                if 'date' in message and 'update_id' in update:
+                                    date = message['date']
+                                    update_id = update['update_id']
+			            if self._previous_update_date >= int(date):
+			    	        continue
+			            last = int(update_id)
+			            self._process_update(update)
+			            previous_update_date = int(date)
+			            self._write_previous_update_date(previous_update_date)
+                time.sleep(3)
 
     def _process_update(self, update):
         if update is None:
