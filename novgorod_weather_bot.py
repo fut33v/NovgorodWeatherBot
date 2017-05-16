@@ -1,6 +1,6 @@
 # coding=utf-8
 from util import bot_util
-#from novgorod_forecast import novgorod_forecast
+# from novgorod_forecast import novgorod_forecast
 from novgorod_forecast.novgorod_forecast import YandexForecaster
 from novgorod_forecast.novgorod_forecast import WeatherComForecaster
 from novgorod_weather import novgorod_weather
@@ -12,26 +12,22 @@ TOKEN_FILENAME = "data/token"
 BOTAN_TOKEN_FILENAME = "data/botan_token"
 WEATHER_COM_TOKEN_FILENAME = "data/weather_com_token"
 
+
 class NovgorodWeatherBot(TelegramBot):
     COMMAND_GET_WEATHER = "/getweather"
     COMMAND_GET_TEMPERATURE = "/gettemperature"
     COMMAND_GET_RAIN = "/getrain"
     COMMAND_GET_PRESSURE = "/getpressure"
+    COMMAND_GET_WIND = "/getwind"
 
-
-    def __init__(self, token, name, weather_com_token=None, botan_token=None):
-        TelegramBot.__init__(self, token, name, botan_token)
-
+    def __init__(self, token, name):
+        TelegramBot.__init__(self, token, name)
 
         self.add_command_no_parameter(self.COMMAND_GET_WEATHER)
         self.add_command_no_parameter(self.COMMAND_GET_TEMPERATURE)
         self.add_command_no_parameter(self.COMMAND_GET_RAIN)
         self.add_command_no_parameter(self.COMMAND_GET_PRESSURE)
-
-        if weather_com_token is not None:
-            self._weather_com_forecaster = WeatherComForecaster(weather_com_token)
-        else:
-            self._weather_com_forecaster = None
+        self.add_command_no_parameter(self.COMMAND_GET_WIND)
 
     def _process_message(self, chat_id, text):
         if text in self._commands_no_parameter:
@@ -74,7 +70,7 @@ class NovgorodWeatherBot(TelegramBot):
 
         Погода — [Новгород.ру](http://novgorod.ru/weather)
         [Логотип бота](vk.com/mzzaxixart)
-        [Автор бота](ilya.fut33v.ru/contacts), Telegram: @fut33v
+        [Автор бота] @fut33v
 
         [Оценить в Store Bot](https://telegram.me/storebot?start=novgorodweatherbot)
         [Github](https://github.com/fut33v/NovgorodWeatherBot)
@@ -83,6 +79,5 @@ class NovgorodWeatherBot(TelegramBot):
 
 if __name__ == "__main__":
     t = bot_util.read_one_string_file(TOKEN_FILENAME)
-    weather_com_t = bot_util.read_one_string_file(WEATHER_COM_TOKEN_FILENAME)
-    bot = NovgorodWeatherBot(t, name="NovgorodWeatherBot", weather_com_token=weather_com_t)
+    bot = NovgorodWeatherBot(t, name="NovgorodWeatherBot")
     bot.start_poll()
