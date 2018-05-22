@@ -1,8 +1,5 @@
 # coding=utf-8
 from util import bot_util
-# from novgorod_forecast import novgorod_forecast
-from novgorod_forecast.novgorod_forecast import YandexForecaster
-from novgorod_forecast.novgorod_forecast import WeatherComForecaster
 from novgorod_weather import novgorod_weather
 from telegram_bot.telegram_bot import TelegramBot
 
