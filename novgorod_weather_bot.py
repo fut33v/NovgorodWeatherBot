@@ -1,4 +1,7 @@
 # coding=utf-8
+
+import sys
+import os
 from util import bot_util
 from novgorod_weather import novgorod_weather
 from telegram_bot.telegram_bot import TelegramBot
@@ -75,6 +78,9 @@ class NovgorodWeatherBot(TelegramBot):
 
 
 if __name__ == "__main__":
-    t = bot_util.read_one_string_file(TOKEN_FILENAME)
-    bot = NovgorodWeatherBot(t, name="NovgorodWeatherBot")
+    bot_token = os.environ.get('BOT_TOKEN', None)
+    if bot_token is None:
+        print ("BOT_TOKEN env is not set!")
+        exit(-1)
+    bot = NovgorodWeatherBot(bot_token, name="NovgorodWeatherBot")
     bot.start_poll()

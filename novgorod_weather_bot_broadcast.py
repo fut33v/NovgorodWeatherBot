@@ -2,7 +2,6 @@
 from datetime import datetime
 import os
 
-from novgorod_forecast import novgorod_forecast
 import novgorod_weather_bot
 from util import bot_util
 
